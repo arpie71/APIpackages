@@ -1,0 +1,80 @@
+#Notes: need to fix collection and fields so that quotations converted to list
+
+coll<-'frus,kissinger'
+ck_collections(coll)
+paste(unlist(coll), collapse=',')
+
+coll<-c('frus','kissinger')
+ck_collections(coll)
+paste(unlist(coll), collapse=',')
+
+coll<-'frus,kissinger'
+if(length(coll)==1){
+  coll<-gsub(',\\s+',',',coll)
+  coll<-gsub('\\s+',',',coll)
+  coll<-as.list(strsplit(coll,",")[[1]])
+}
+ck_collections(coll)
+paste(unlist(coll), collapse=',')
+
+coll<-'frus, kissiger'
+if(length(coll)==1){
+  coll<-gsub(',\\s+',',',coll)
+  coll<-gsub('\\s+',',',coll)
+  coll<-as.list(strsplit(coll,",")[[1]])
+}
+ck_collections(coll)
+paste(unlist(coll), collapse=',')
+
+coll<-c('frus','kissinger')
+if(length(coll)==1){
+coll<-gsub(',\\s+',',',coll)
+coll<-gsub('\\s+',',',coll)
+coll<-as.list(strsplit(coll,",")[[1]])
+}
+ck_collections(coll)
+paste(unlist(coll), collapse=',')
+
+coll<-c('frus')
+if(length(coll)==1){
+  coll<-gsub(',\\s+',',',coll)
+  coll<-gsub('\\s+',',',coll)
+  coll<-as.list(strsplit(coll,",")[[1]])
+}
+ck_collections(coll)
+paste(unlist(coll), collapse=',')
+
+coll<-'frus'
+if(length(coll)==1){
+  coll<-gsub(',\\s+',',',coll)
+  coll<-gsub('\\s+',',',coll)
+  coll<-as.list(strsplit(coll,",")[[1]])
+}
+ck_collections(coll)
+paste(unlist(coll), collapse=',')
+
+
+coll<-'frus,kissinger'
+coll<-ck_list(coll)
+ck_collections(coll)
+paste(unlist(coll), collapse=',')
+
+coll<-'frus, kissiger'
+coll<-ck_list(coll)
+ck_collections(coll)
+paste(unlist(coll), collapse=',')
+
+coll<-c('frus','kissinger')
+coll<-ck_list(coll)
+ck_collections(coll)
+paste(unlist(coll), collapse=',')
+
+coll<-c('frus')
+coll<-ck_list(coll)
+ck_collections(coll)
+paste(unlist(coll), collapse=',')
+
+coll<-'frus'
+coll<-ck_list(coll)
+ck_collections(coll)
+paste(unlist(coll), collapse=',')

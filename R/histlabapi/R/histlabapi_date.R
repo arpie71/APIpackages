@@ -1,0 +1,88 @@
+#' History Lab API - Date search
+#'
+#' This program allows a date or date range search using the History Lab API.
+#' Options to limit the results include collection and fields.
+#'
+#' @param date Specific date to search
+#' @param start.date/end.date Date range for the search
+#' @param coll.name Name of History Lab collection to search
+#' @param fields Specific History Lab fields to return
+#'
+#'
+#' @return
+#' @export
+#' @examples
+#'
+
+require(jsonlite)
+source('R/histlabapi_utils.R')
+
+hlapi_date<-function(date=NULL,start.date=NULL,end.date=NULL, limit = 25,fields=NULL,coll.name=NULL,run=FALSE,...){
+  url<-"http://api.declassification-engine.org/declass/v0.4/?"
+  notice<-NULL
+
+  if(is.null(date)&(is.null(start.date)&is.null(end.date))) stop('You must supply either a date or start and end dates for a date search.')
+
+  ## ADD CHECK DATES - START.DATE, END.DATE, DATE all possibilities
+  if(!is.null(date)&(!is.null(start.date)|!is.null(end.date))){
+    if(is.null(notice)) notice<-"You cannot specify both a date and a start or end date." else notice<-paste0(notice,"\nYou cannot specify both a date and a start or end date.")
+  }
+  if(!is.null(start.date)&is.null(end.date)){
+    if(is.null(notice)) notice<-"Please specify an end date." else notice<-paste0(notice,"\nPlease specify an end date.")
+  }
+  if(!is.null(end.date)&is.null(start.date)){
+    if(is.null(notice)) notice<-"Please specify a start date." else notice<-paste0(notice,"\nPlease specify a start date.")
+  }
+
+  if(!is.null(notice)){
+    stop(notice)
+  }
+  if(!is.null(date)) {
+    d<-ck_date(date)
+    url<-paste0(url,"date=",d)
+  }
+
+  if(!is.null(start.date)) {
+    s<-ck_date(start.date)
+    url<-paste0(url,"start_date=",s)
+
+  }
+
+  if(!is.null(end.date)) {
+    e<-ck_date(end.date)
+    url<-paste0(url,"&end_date=",e)
+    if(as.Date(s,date.format="%y-%m-%d")>as.Date(e,date.format="%y-%m-%d")){
+      stop('Start date must be less than or equal to end date.')
+    }
+
+  }
+
+
+  # Check fields if fields entered
+  if(!is.null(fields)){
+    fields<-ck_list(fields)
+    f<-ck_fields(fields)
+    if(!is.null(f)) stop(f)
+    url<-paste0(url,"&fields=",paste(unlist(fields), collapse=','))
+  }
+
+  #Check collections if collections entered
+  if(!is.null(coll.name)){
+    coll.name<-ck_list(coll.name)
+    f<-ck_collections(coll.name)
+    if(!is.null(f)) stop(f)
+    url<-paste0(url,"&collections=",paste(unlist(coll.name), collapse=','))
+  }
+
+  url<-paste0(url,"&page_size=",limit)
+
+  if(run){
+    u<-fromJSON(url)
+    return(u)
+  }
+  if(!run){
+    return(url)
+  }
+}
+
+

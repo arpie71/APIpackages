@@ -2,16 +2,16 @@ capture program drop date_parse
 capture program drop histlabapi
 mata mata clear
 ** TO ADD:
-** Search: Multiple collections 
 *** text search returns 1 more hit than page_size up to maximum hits
+*** check topics/countries to make sure that they are correct 
+*** allow string searches of topics/countries 
+
 
 ** http://api.declassification-engine.org/declass/v0.4/text/?search=udeac&start_date=1950-01-01&end_date=2000-12-31&collections=statedeptcables
 ** http://api.declassification-engine.org/declass/v0.4/text/?search=UDEAC&start_date=1950-01-01&end_date=1990-01-01&collections=frus
 ** http://api.declassification-engine.org/declass/v0.4/text/?search=udeac&start_date=1950-1-1&end_date=2000-12-31&collections=frus
 *mata mata drop hl_api()
 *f = fopen("http://api.declassification-engine.org/declass/v0.4/?start_date=1947-01-01&end_date=1948-12-01", "r")
-
-*** fields, collections, 
 
 *** id, ids, date, start_date&end_date,random (no ?), random with limit (random/?limit=#),
 ***http://api.declassification-engine.org/declass/v0.4/?start_date=1947-01-01&end_date=1947-1-4&page_size=60
@@ -21,16 +21,16 @@ mata mata clear
 
 
 program define histlabapi 
-syntax , options(string)  [ date(string) start(string) end(string) LIMit(int 25) text(string) id(string) geog(string) COLlection(string) fields(string)]
+syntax , options(string)  [ date(string) start(string) end(string) LIMit(int 0) text(string) id(string) COLlection(string) fields(string) geog(string) topic(numlist integer) person(string)]
 
-** allowable options now: id, date, random, text
-if "`limit'"=="" & ~regexm("`options'","`random'") {
+** allowable options now: id, date, random, text, entity
+if "`limit'"=="0" & /*~regexm("`options'","`random'")*/ {
 nois di "You did not specifiy a page limit. Defaulting to 25 results."
-local `limit'="25"
+local limit="25"
 
 }
-if ~regexm("`options'","(id)|(date)|(random)|(text)") {
-nois di as error "`option' is not a valid option. Allowable options are id, date, text, and random."
+if ~regexm("`options'","(id|date|random|text|entity)") {
+nois di as error "`option' is not a valid option. Allowable options are id, date, text, random, and entity."
 exit
 }
 if regexm("`options'","(id)|(date)|(text)") & regexm("`options'","(random)") {
@@ -43,65 +43,80 @@ local search  `""?""'
 }
 
 
+if (("`start'"~="" & "`end'"=="")|("`start'"=="" & "`end'"~="")){
+	nois di as error "Please specify both a start and end date."
+	exit
+}
+
 if "`collection'"~="" {
-if ~regexm("`collection'","(cpdoc)|(clinton)|(kissinger)|(statedeptcables)|(frus)|(ddrs)|(cabinet)|(pdb)") {
+local collection : subinstr local collection ", " ",", all
+local collection : subinstr local collection " " "," , all
+tokenize "`collection'", parse(",")
+while "`1'"~="" {
+if "`1'"~="," & ~regexm("`1'","^(cpdoc|clinton|kissinger|statedeptcables|frus|ddrs|cabinet|pdb)$") {
 nois di as error "{p}`collection' is not a valid collection. Allowable collections are: cpdoc, clinton, kissinger, statedeptcables, frus, ddrs, cabinet, pdb{p_end}"
+exit
+}
+macro shift
 }
 }
 
+if "`text'"~="" local text : subinstr local text " " "%20", all
 
+*if "`geog'"~="" {
+*mata: st_local("cty",get_cty("`geog'"))
+*}
 
-
-if "`geog'"~="" {
-mata: st_local("cty",get_cty("`geog'"))
-}
 if "`fields'"~="" {
-mata: check_fields("`fields'")
+	local fields : subinstr local fields ", " ",", all
+	local fields : subinstr local fields " " "," , all
+		
+	mata: check_fields("`fields'")
+	if(scalar(ck)==0) {
+		nois di as error  "At least one of the fields you entered is incorrect"
+		exit
+	}
+
 }
 
 tokenize "`options'" , parse(" ")
 while "`1'" ~= "" {
-
+** full text search
 	if "`1'"=="text" {
-		*
-			if "`collection'"=="" |("`start'"=="" | "`end'"=="") {
+		if "`fields'"~="" {
+		    nois di "The fields option is not available with a full-text search. Ignoring the fields list."
+		}
+		if "`collection'"=="" |("`start'"=="" | "`end'"=="") {
 			nois di as error "You must specify a collection and date range when using full-text search."
 			exit
-			}
+		}
 		foreach _d in start end {
-			if !ustrregexm("``_d''","^\d+(\.|\-|/)\d+(\.|\-|/)\d+$") {
-			    nois di as error "Please format the date in numeric format with .,\, or - separators between each part."
-				exit
-			}
-
 			if "``_d''"~="" {
-					if regexm("``_d''","\.") {
-						local `=substr("`_d'",1,1)' = subinstr("``_d''","."," ",.)
-					}
-					if regexm("``_d''","/") {
-						local `=substr("`_d'",1,1)' = subinstr("``_d''","/"," ",.)
-					}
-
-					if regexm("``_d''","-") {
-						local `=substr("`_d'",1,1)' = subinstr("``_d''","-"," ",.)
-					}
-				tokenize ``=substr(`"`_d'"',1,1)''
-				local `=substr("`_d'",1,1)' = "`3'-`1'-`2'"
+				date_parse ``_d''
+				if "`=r(d)'"=="." {
+					exit
+				}
+				local `=substr("`_d'",1,1)' = "`=r(d)'"
 				}
 			}
 		local search = "text/"+`search'+"search=`text'&collections=`collection'&start_date=`s'&end_date=`e'&page_size=`limit'"
 		local limit=`limit'+1
 	}
 
+** search by ID
 	if "`1'"=="id" {
 		if "`id'"=="" {
 			nois di as error "You selected the id option but provided no ids. Please list ids, separated by a comma."
 			exit
 			}
+		local id : subinstr local id ", " ",", all
+		local id : subinstr local id " " "," , all
 		if "`id'"~=""&~regexm("`id'",",") local search = `search'+"id=`id'"
 		if "`id'"~=""&regexm("`id'",",") local search = `search'+"ids=`id'"
+		if "`fields'"~="" local search = "`search'"+"&fields=`fields'"
 	}
 
+** search by date
 	if "`1'"=="date" {
 		if ("`date'"=="" & ("`start'"=="" & "`end'"=="")) {
 			nois di as error "You selected the date option but provided no dates. Please list a date or a start and end date."
@@ -111,37 +126,23 @@ while "`1'" ~= "" {
 			nois di as error "Please specify both a start and end date."
 			exit
 		}
-** check dates - month, day, and year in numeric format, separated by "-/."
 		foreach _d in date start end {
 			if "``_d''"~="" {
-			if !ustrregexm("``_d''","^\d+(\.|\-|/)\d+(\.|\-|/)\d+$") {
-			    nois di as error "Please format the date in numeric format with .,\, or - separators between each part."
-				exit
-			}
-			}
-		}
-		
-			foreach _d in date start end {
-				if "``_d''"~="" {
-					if regexm("``_d''","\.") {
-						local `=substr("`_d'",1,1)' = subinstr("``_d''","."," ",.)
-					}
-					if regexm("``_d''","/") {
-						local `=substr("`_d'",1,1)' = subinstr("``_d''","/"," ",.)
-					}
-
-					if regexm("``_d''","-") {
-						local `=substr("`_d'",1,1)' = subinstr("``_d''","-"," ",.)
-					}
-				tokenize ``=substr(`"`_d'"',1,1)''
-				local `=substr("`_d'",1,1)' = "`3'-`1'-`2'"
+				date_parse ``_d''
+				if "`=r(d)'"=="." {
+					exit
+				}
+				local `=substr("`_d'",1,1)' = "`=r(d)'"
 				}
 			}
-			
 			if "`date'"~="" local search = `search'+"date=`d'&page_size=`limit'"
 			if "`start'"~="" & "`end'"~="" local search = `search'+"start_date=`s'&end_date=`e'&page_size=`limit'"
+			if "`collection'"~="" local search = "`search'"+"&collections=`collection'"
+			if "`fields'"~="" local search = "`search'"+"&fields=`fields'"
 	}
 
+
+** random IDs
 	if "`1'"=="random" {
 		if "`limit'"=="" {
 			nois di "You selected the random option but no limit. Defaulting to 25 results."
@@ -149,7 +150,35 @@ while "`1'" ~= "" {
 		}
 		if "`limit'"~="" local search "random/?limit=`limit'"
 	}
-macro shift
+
+** entity search
+	if "`1'"=="entity" {
+	    if "`geog'"=="" & "`topic'"=="" & "`person'"=="" {
+		    nois di as error "At least one of the geography, topic, or person options must be included with an entity search"
+			exit
+		}
+		foreach _d in date start end {
+			if "``_d''"~="" {
+				date_parse ``_d''
+				if "`=r(d)'"=="." {
+					exit
+				}
+				local `=substr("`_d'",1,1)' = "`=r(d)'"
+				}
+			}
+			if "`geog'"~="" local search = "`search'"+"?geo_ids=`geog'"
+			if "`topic'"~="" & "`geog'"=="" local search = "`search'"+"?topic_ids=`topic'"
+			if "`person'"~="" & "`topics'"=="" & "`geog'"=="" local search = "`search'"+"?person_ids=`person'"
+			if "`topic'"~="" & "`geog'"~="" local search = "`search'"+"&topic_ids=`topic'"
+			if "`person'"~="" & ("`topics'"~="" | "`geog'"=="") local search = "`search'"+"&person_ids=`person'"
+			if "`date'"~="" local search = "`search'"+"&date=`d'"
+			if "`start'"~="" & "`end'"~="" local search = "`search'"+"&start_date=`s'&end_date=`e'"
+			if "`collection'"~="" local search = "`search'"+"&collections=`collection'"
+			if "`fields'"~="" local search = "`search'"+"&fields=`fields'"
+	}
+	
+	
+	macro shift
 }
 clear
 mata: hl_api("`search'", "`limit'")
@@ -206,12 +235,16 @@ if "`yr'"=="" {
 	nois di as error "Please provide a 4-digit year value."
 	exit
 } 
+
 if `=date("`yr'-`mo'-`day'", "YMD")'==. {
     nois di as error "`anything' is not a valid date"
 	exit
 }
+if length("`mo'")<2 local mo = "0"+"`mo'"
+if length("`day'")<2 local day = "0"+"`day'"
 return local d =  "`yr'-`mo'-`day'"
 end
+
 
 mata
 
@@ -229,7 +262,7 @@ void hl_api(string scalar search, string scalar lim) {
 	fclose(f)
 	if(regexm(maindataset,(`"({"count": )(0)"'))) {
 	   displayas("error")
-	   display("No output returned",f)
+	   display("No results found",f)
 	   exit(601)
 	}
 	if(regexm(maindataset,(`"({"count": )([0-9]+)"'))) ct =regexs(2)
@@ -289,14 +322,10 @@ return(k)
 
 
 void function check_fields(string scalar f) {
-tok = tokens(f)
+tok = tokens(f,",")
 fields3 ="body, body_html, body_summary, chapt_title, countries, collection, date, date_year, date_month, from_field, id, location, nuclear, persons, topics, classification, refs, cable_references, source, source_path, cable_type, subject, title, to_field, tags, description, category, pdf, title_docview, orighand, concepts, type, office, readability,"
 ck =all(regexm(fields3,tok))
-if(ck==0) {
-displayas("error")
-display("At least one of the fields you entered is incorrect")
-exit()
-}
+st_numscalar("ck", ck)
 
 }
 end
