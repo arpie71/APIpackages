@@ -42,7 +42,7 @@ ck_collections<-function(collections){
   #' @param collections List of collections to check
   #' Note: right now collections are hard-coded but will be moved to configuration file
 
-  collection.list<-c("cpdoc","clinton","kissinger","statedeptcables","frus","ddrs","cabinet","pdb")
+  collection.list<-c("cpdoc","clinton","kissinger","statedeptcables","frus","ddrs","cabinet","pdb","worldbank")
   n<-NULL
   for(c in collections){
     if(c %ni% collection.list){

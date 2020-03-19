@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "3995392012",
     "id" : "A575D88A",
-    "lastKnownWriteTime" : 1584554399,
-    "last_content_update" : 1584554399175,
+    "lastKnownWriteTime" : 1584576676,
+    "last_content_update" : 1584576676842,
     "path" : "C:/Users/arpie/Documents/GitHub/APIpackages/R/histlabapi/R/hlapi_entity.R",
     "project_path" : "R/hlapi_entity.R",
     "properties" : {
-        "cursorPosition" : "8,54",
-        "scrollLine" : "0"
+        "cursorPosition" : "27,0",
+        "scrollLine" : "23"
     },
     "read_only" : false,
     "read_only_alternatives" : [

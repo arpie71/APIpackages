@@ -61,7 +61,9 @@ hlapi_overview<-function(start.date=NULL,end.date=NULL, limit = 25,fields=FALSE,
   if(!is.null(coll.name)&entity&is.null(start.date)&is.null(end.date)){
     if(is.null(entity.type)) url<-paste0(url,"entity_info/?collection=",coll.name)
     if(!is.null(entity.type)) url<-paste0(url,"entity_info/?collection=",coll.name,"&entity=",entity.type)
-  }
+    url<-paste0(url,"&page_size=",limit)
+
+      }
 
   if(!is.null(start.date)|!is.null(end.date)){
   #collection & entity name are both required
@@ -94,7 +96,9 @@ hlapi_overview<-function(start.date=NULL,end.date=NULL, limit = 25,fields=FALSE,
     if(as.Date(s,date.format="%y-%m-%d")>as.Date(e,date.format="%y-%m-%d")){
       stop('Start date must be less than or equal to end date.')
     }
-  }
+    url<-paste0(url,"&page_size=",limit)
+
+      }
 
   if(run){
     u<-fromJSON(url)

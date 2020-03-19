@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "997924527",
+    "hash" : "0",
     "id" : "9E1790B7",
-    "lastKnownWriteTime" : 1584527296,
-    "last_content_update" : 1584527296506,
+    "lastKnownWriteTime" : 1584575871,
+    "last_content_update" : 1584575871630,
     "path" : "C:/Users/arpie/Documents/GitHub/APIpackages/R/histlabapi/R/hlapi_search.R",
     "project_path" : "R/hlapi_search.R",
     "properties" : {
-        "cursorPosition" : "20,99",
-        "scrollLine" : "7"
+        "cursorPosition" : "61,0",
+        "scrollLine" : "48"
     },
     "read_only" : false,
     "read_only_alternatives" : [

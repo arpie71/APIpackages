@@ -44,7 +44,7 @@ if(is.null(start.date)|is.null(end.date)) {
   if(!is.null(notice)){
     stop(notice)
   }
-
+  s.text<-gsub("\\s+","%20",s.text)
   url<-paste0(url,"search=",s.text)
 
     url<-paste0(url,"&collections=",paste(unlist(coll.name), collapse=','))
@@ -58,6 +58,7 @@ if(is.null(start.date)|is.null(end.date)) {
   url<-paste0(url,"&start_date=",paste(s, collapse=','))
 
   url<-paste0(url,"&end_date=",paste(e, collapse=','))
+  url<-paste0(url,"&page_size=",limit)
 
 
   # for now hardcoding date
@@ -85,3 +86,10 @@ hlapi_search('udeac', coll.name=c('statedeptcables','frus'),  start.date="1974-0
 
 #  start<end
 hlapi_search('udeac', coll.name=c('statedeptcables','frus'),  start.date="1974-01-01", end.date="1973-12-31", run='run')
+
+
+hlapi_search('united nations', coll.name=c('statedeptcables','frus'),  start.date="1974-01-01", end.date="1979-12-31")
+
+hlapi_search('united nations', coll.name=c('statedeptcables','frus'),  start.date="1974-01-01", end.date="1979-12-31", run='run')
+
+hlapi_search('league of  nations', coll.name=c('statedeptcables','frus'),  start.date="1974-01-01", end.date="1979-12-31")

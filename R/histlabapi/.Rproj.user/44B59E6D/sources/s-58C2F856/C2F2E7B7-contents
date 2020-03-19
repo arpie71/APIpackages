@@ -6,6 +6,7 @@
 #'
 #' @param ids ID or list of IDs to search for
 #' @param fields Specific History Lab fields to return
+#' @param topics Return the topics for an ID or list of IDs
 #' @param limit Number of results to return
 #'
 #' @return

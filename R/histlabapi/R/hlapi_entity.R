@@ -2,7 +2,7 @@
 #'
 #' This program allows a search of the History Lab API by type of entity (countries, topics, or persons).
 #'
-#' @param entity The type of entity to search (countries, topics, and/or persons)
+#' @param entity.type The type of entity to search (countries, topics, and/or persons)
 #' @param value The code of the specific entity to be searched
 #' @param coll.name History Lab collection to search
 #' @param start.date/end.date Date range for the search
@@ -17,11 +17,11 @@
 require(jsonlite)
 source('R/histlabapi_utils.R')
 
-hlapi_entity<-function(entity, value, limit = 25,fields=NULL,coll.name=NULL,date=NULL,start.date=NULL,end.date=NULL,run=NULL,...){
+hlapi_entity<-function(entity.type, value, limit = 25,fields=NULL,coll.name=NULL,date=NULL,start.date=NULL,end.date=NULL,run=NULL,...){
 url<-"http://api.declassification-engine.org/declass/v0.4/?"
 search<-NULL
 notice<-NULL
-if(missing(entity)){
+if(missing(entity.type)){
   notice <- "Please supply an entity: countries, topics, and/or persons"
   stop(notice)
 }
@@ -31,16 +31,16 @@ if(missing(value)){
   stop(notice)
 }
 
-entity<-ck_list(entity)
+entity.type<-ck_list(entity.type)
 #value<-ck_list(value)
 
-if(length(value)!=length(entity)){
+if(length(value)!=length(entity.type)){
   notice <- "The number of entities and the number of values do not match."
   stop(notice)
 }
 
-for(i in 1:length(entity)){
-  if(entity[i] %ni% c("countries", "persons", "topics")){
+for(i in 1:length(entity.type)){
+  if(entity.type[i] %ni% c("countries", "persons", "topics")){
     notice <- "Acceptable entities are countries, topics, and/or persons"
     stop(notice)
   }
@@ -48,7 +48,7 @@ for(i in 1:length(entity)){
   v<-toupper(gsub("(\\|)","OR",v))
 
   # Make sure countries is 3-digits
-  if(entity[i]=="countries"){
+  if(entity.type[i]=="countries"){
     g.list<-strsplit(v,'AND')
         for(j in 1:length(g.list[[1]])){
       if(nchar(g.list[[1]][j])==2) g.list[[1]][j]<-paste0("0",g.list[[1]][j])
@@ -57,12 +57,12 @@ for(i in 1:length(entity)){
       v<-(paste0(g.list[[1]],collapse="AND"))
       }
 
-  if(entity[i]=="countries"&!is.null(search)) search<-paste0(search,"&geo_ids=",v)
-  if(entity[i]=="countries"&is.null(search)) search<-paste0("geo_ids=",v)
-  if(entity[i]=="topics"&!is.null(search)) search<-paste0(search,"&topic_ids=",v)
-  if(entity[i]=="topics"&is.null(search)) search<-paste0("topic_ids=",v)
-  if(entity[i]=="persons"&!is.null(search)) search<-paste0(search,"&person_ids=",v)
-  if(entity[i]=="persons"&is.null(search)) search<-paste0("person_ids=",v)
+  if(entity.type[i]=="countries"&!is.null(search)) search<-paste0(search,"&geo_ids=",v)
+  if(entity.type[i]=="countries"&is.null(search)) search<-paste0("geo_ids=",v)
+  if(entity.type[i]=="topics"&!is.null(search)) search<-paste0(search,"&topic_ids=",v)
+  if(entity.type[i]=="topics"&is.null(search)) search<-paste0("topic_ids=",v)
+  if(entity.type[i]=="persons"&!is.null(search)) search<-paste0(search,"&person_ids=",v)
+  if(entity.type[i]=="persons"&is.null(search)) search<-paste0("person_ids=",v)
 }
 url<-paste0(url,search)
 # Check fields if fields entered
@@ -81,7 +81,6 @@ if(!is.null(coll.name)){
   url<-paste0(url,"&collections=",paste(unlist(coll.name), collapse=','))
 }
 
-## ADD CHECK DATES - START.DATE, END.DATE, DATE all possibilities
 if(!is.null(date)&(!is.null(start.date)|!is.null(end.date))){
   if(is.null(notice)) notice<-"You cannot specify both a date and a start or end date." else notice<-paste0(notice,"\nYou cannot specify both a date and a start or end date.")
 }
