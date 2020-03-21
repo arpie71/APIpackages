@@ -80,7 +80,7 @@ hlapi_search('udeac', coll.name=c('statedeptcables','frs'))
 
 #hlapi_search('udeac', coll.name=c('statedeptcables','frus'), run='run')
 
-hlapi_search('udeac', coll.name=c('statedeptcables','frus'),  start.date="1974-01-01", end.date="1979-12-31")
+hlapi_search('udeac', coll.name=c('statedeptcables','frus'),  start.date="1950-01-01", end.date="2000-12-31")
 
 hlapi_search('udeac', coll.name=c('statedeptcables','frus'),  start.date="1974-01-01", end.date="1979-12-31", run='run')
 

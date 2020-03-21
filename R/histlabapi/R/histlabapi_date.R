@@ -86,3 +86,8 @@ hlapi_date<-function(date=NULL,start.date=NULL,end.date=NULL, limit = 25,fields=
 }
 
 
+hlapi_date(start.date='1947-01-01', end.date='12/01/1948', run=TRUE)
+
+histlabapi , options(date)  start(01/01/1947) end(12/01/1948)  limit(100)
+histlabapi , options(date) collection(cpdoc kissinger) start(01/1/1975) end(12/01/1975)  limit(100)
+histlabapi , options(date) start(01/1/1973) end(2/01/1973)  limit(100) collection(kissinger) fields(subject,body)

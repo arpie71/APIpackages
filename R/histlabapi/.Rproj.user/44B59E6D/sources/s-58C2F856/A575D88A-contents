@@ -179,6 +179,10 @@ hlapi_entity(c('countries','topics'), fields=c('subject','title'), value=c('40',
 #  start<end
 hlapi_entity(c('countries','topics'), fields=c('subject','title'), value=c('40','0'), start.date="12/31/1974",end.date="1.1.1973",limit=50)
 
+hlapi_entity(c('countries','topics'), fields=c('subject','title'), value=c('100and888','0'), limit=50, run='run')
+
+hlapi_entity('topics', fields=c('subject','title'), value='0', start.date="1/1/1975",end.date="12.31.1980")
+
 
 #!
 # t<-fromJSON('http://api.declassification-engine.org/declass/v0.4/?geo_ids=100&fields=subject,title')

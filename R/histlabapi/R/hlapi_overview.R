@@ -112,7 +112,7 @@ hlapi_overview<-function(start.date=NULL,end.date=NULL, limit = 25,fields=FALSE,
 }
 
 
-hlapi_overview(fields=TRUE)
+hlapi_overview(fields=TRUE, run=TRUE)
 hlapi_overview(collections=TRUE)
 
 hlapi_overview(fields=TRUE, coll.name='frus')
@@ -123,7 +123,7 @@ hlapi_overview(coll.name='frus,kissinger')
 hlapi_overview(coll.name='frus,kissinger', entity=TRUE)
 
 hlapi_overview(coll.name='frus', entity=TRUE)
-hlapi_overview(coll.name='frus', entity=TRUE, entity.type = 'persons')
+hlapi_overview(coll.name='frus', entity=TRUE, entity.type = 'countries', run=TRUE)
 hlapi_overview(coll.name='frus', entity=TRUE, entity.type = 'persos')
 
 hlapi_overview(coll.name='frus', entity=TRUE, entity.type = 'persons,countries')
@@ -132,7 +132,7 @@ hlapi_overview(coll.name='frus', entity=TRUE, entity.type = 'persons', start.dat
 
 hlapi_overview(coll.name='frus', entity=TRUE, entity.type = 'topics', start.date='1974-01-01', end.date='1/1/1979', run=TRUE)
 
-hlapi_overview(coll.name='frus', entity=TRUE, entity.type = 'countries', start.date='1974-01-01', end.date='1/1/1979', run=TRUE)
+hlapi_overview(coll.name='frus', entity=TRUE, entity.type = 'countries', start.date='1973-01-01', end.date='12/31/1979', run=TRUE)
 
 
 #http://api.declassification-engine.org/declass/v0.4/fields

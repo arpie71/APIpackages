@@ -22,8 +22,8 @@ qui do ~/Documents\GitHub\APIpackages\Stata\utils/loadcty.do
 *program drop histlabapi
 
 
-program define histlabapi , rclass
-syntax , options(string)  [ date(string) start(string) end(string) LIMit(int 0) text(string) id(string) COLlection(string) fields(string) geog(string) topic(numlist integer) person(string) norun]
+program define histlabapi 
+syntax , options(string)  [ date(string) start(string) end(string) LIMit(int 0) text(string) id(string) COLlection(string) fields(string) geog(string) topic(numlist integer) person(string)]
 
 ** allowable options now: id, date, random, text, entity
 if "`limit'"=="0" & /*~regexm("`options'","`random'")*/ {
@@ -141,9 +141,7 @@ while "`1'" ~= "" {
 			if "`start'"~="" & "`end'"~="" local search = `search'+"start_date=`s'&end_date=`e'&page_size=`limit'"
 			if "`collection'"~="" local search = "`search'"+"&collections=`collection'"
 			if "`fields'"~="" local search = "`search'"+"&fields=`fields'"
-			if "`limit'"~="" local search = "`search'"+"&page_size=`limit'"
-
-			}
+	}
 
 
 ** random IDs
@@ -179,48 +177,15 @@ while "`1'" ~= "" {
 			if "`start'"~="" & "`end'"~="" local search = "`search'"+"&start_date=`s'&end_date=`e'"
 			if "`collection'"~="" local search = "`search'"+"&collections=`collection'"
 			if "`fields'"~="" local search = "`search'"+"&fields=`fields'"
-			if "`limit'"~="" local search = "`search'"+"&page_size=`limit'"
 	}
 	
 	
 	macro shift
 }
-qui{
 clear
-local url ="http://api.declassification-engine.org/declass/v0.4/"
-local url = "`url'`search'"
-nois display "`url'"
-jsonio kv , file("`url'") w(all)
-split key, parse("/") gen(t)
-
-scalar hl_count = `=value if key=="/count"'
-scalar hl_pagesize = `=value if key=="/page_size"'
-
-levelsof t2, local(b) clean
-levelsof key, local(k) clean
-if `=ustrregexm("`k'","element")' {
-drop key t1 t2
-drop if t4==""
-levelsof value, local(result) clean
-forval i = 1/`: word count `result'' {
-noisily display "`: word `i' of `result''"
-return local results = result
-}
-} 
-else if `=ustrregexm("`b'","results")' {
-drop key t1 t2
-drop if t4==""
-reshape wide value , i(t3) j(t4) str
-rename (value*) (*)
-drop t3
-}
-
-return scalar hl_count = hl_count
-return scalar hl_pagesize = hl_pagesize 
-
+mata: hl_api("`search'", "`limit'")
 
 qui compress
-}
 end
 
 program define date_parse , rclass
@@ -284,6 +249,65 @@ end
 
 
 mata
+
+void hl_api(string scalar search, string scalar lim) {
+	ct=""
+	search = st_local("search")
+	url ="http://api.declassification-engine.org/declass/v0.4/"
+	f = fopen(url+search, "r")
+
+		maindataset = ""
+		while ((part_maindataset=fget(f))!=J(0,0,"")) {
+			maindataset = maindataset + part_maindataset
+		}
+		
+	fclose(f)
+	if(regexm(maindataset,(`"({"count": )(0)"'))) {
+	   displayas("error")
+	   display("No results found",f)
+	   exit(601)
+	}
+	if(regexm(maindataset,(`"({"count": )([0-9]+)"'))) ct =regexs(2)
+	if(strtoreal(ct)>25&strtoreal(lim)>=25&strtoreal(ct)>strtoreal(lim)) ct=lim
+	if(strtoreal(ct)<=25&strtoreal(lim)<=strtoreal(ct)) ct = lim
+	if(strtoreal(ct)>25&strtoreal(lim)<=25) ct = lim
+	if(strtoreal(ct)>25) data =substr(maindataset,strpos(maindataset,"results")+11,strrpos(maindataset,"],")-strpos(maindataset,"results")-10)
+	if(strtoreal(ct)<=25) data =substr(maindataset,strpos(maindataset,"results")+11,strrpos(maindataset,"]")-strpos(maindataset,"results")-10)
+	header=J(1,0,"")
+	body = J(strtoreal(ct),0,"")
+	z= tokeninit(",:","",(`""""'))
+	for(i=1;i<=strtoreal(ct);i++) {
+		if(i<strtoreal(ct)) d=substr(data, 1,strpos(data,"},"))
+		else if(i==strtoreal(ct)) d=substr(data, 1,strpos(data,"}]"))
+		data = subinstr(data,d,"")
+		d = usubinstr(d,"null",".",.)
+		d = usubinstr(d,"{","",.)
+		d = usubinstr(d,"}","",.)
+		d = usubinstr(d,"]","",.)
+		d = usubinstr(d,`"\""',"\'",.)
+		tokenset(z,d)
+		j = 1
+		text =J(1,0,"")
+
+		while((token = tokenget(z)) != "") {
+
+		if (token==" ") continue
+			else if(mod(j,2)==1&i==1) header=header,token
+			else if(mod(j,2)==0) text=text,token
+			j=j+1
+		}
+		
+		if(i==1) body=text
+		else if(i>1) body = body\text
+		
+	}
+	header = subinstr(header,`"""',"")
+	body = subinstr(body,`"""',"")
+	st_addobs(strtoreal(ct))
+	a = st_addvar("strL",header)
+	st_sstore(.,a,body)
+
+}
 
 string scalar function get_cty(string scalar key) {
 ///loadcty()

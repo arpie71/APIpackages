@@ -248,7 +248,7 @@ asarray(hl_cty, "Tibet","895")
 
 }
 
-mata mosave loadcty(), dir(~\Dropbox\Columbia\api) replace
+mata mosave loadcty(), dir(~\Documents\GitHub\APIPackages\Stata\utils) replace
         end
 
 

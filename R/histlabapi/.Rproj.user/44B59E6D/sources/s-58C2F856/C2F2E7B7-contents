@@ -34,7 +34,7 @@ hlapi_id<-function(ids=NULL, fields=NULL, topics=FALSE, run = NULL,...){
   if(length(ids)>1|length(as.list(strsplit(ids,",")[[1]]))>1) s.id<-'ids=' else s.id<-'id='
 
   url<-paste0(url,s.id,paste(unlist(ids), collapse=','))
-
+#print("here")
   if(!is.null(fields)){
     fields<-ck_list(fields)
     f<-ck_fields(fields)
@@ -67,7 +67,7 @@ hlapi_id(ids='1973LIMA07564, P760191-2216, 1973LIMA01001')
 hlapi_id(ids='1973LIMA07564 P760191-2216 1973LIMA01001')
 hlapi_id(ids='1973LIMA07564 P760191-2216  1973LIMA01001')
 
-hlapi_id(ids=c('1973LIMA07564','P760191-2216','1973LIMA01001'))
+hlapi_id(ids=c('1973LIMA07564','P760191-2216','1973LIMA01001'), run='run')
 hlapi_id(ids=c('1973LIMA07564'))
 
 hlapi_id(ids='1973LIMA07564', run='run')
