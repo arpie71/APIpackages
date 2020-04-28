@@ -52,7 +52,8 @@ for(i in 1:length(entity.type)){
     g.list<-strsplit(v,'AND')
         for(j in 1:length(g.list[[1]])){
       if(nchar(g.list[[1]][j])==2) g.list[[1]][j]<-paste0("0",g.list[[1]][j])
-      if(nchar(g.list[[1]][j])>3|nchar(g.list[[1]][j])<2) stop('Invalid value for countries')
+      if(nchar(g.list[[1]][j])==1) g.list[[1]][j]<-paste0("00",g.list[[1]][j])
+      if(nchar(g.list[[1]][j])>3) stop('Invalid value for countries')
     }
       v<-(paste0(g.list[[1]],collapse="AND"))
       }

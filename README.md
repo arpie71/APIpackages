@@ -5,6 +5,21 @@ Stata and R interfaces
 This repository will hold the code for the Stata and R packages to interact with the History Lab API.
 
 
+## TO-DO
+**Stata:**
+ 1. Random IDs - the json program used does not support a single type of result it seems
+ 2. Multiple country, topic and person IDs - should restrict to single value for now
+ 3. String topic searches
+
+**R:**
+ 1. Allow full text search for countries
+ 2. Allow full text search for topics
+ 3. Restrict entity searches to single value per entity for now
+
+## API Issues
+While multiple countries are okay in the API queries, multiple topics do not work very well. They are giving a 502 Proxy Error.
+Also incorrect topics or countries return 0 results, but incorrect person IDs lead to an API error.
+
 ## Query Types
 For now, I have divided the queries up into 6 types based on their purpose.
 
@@ -30,7 +45,7 @@ hlapi_random(limit=25)
 
 
 ### Date search
-
+These queries allow a search of the History Lab collection for a given date or date range.
 #### API code
 ```
 http://api.declassification-engine.org/declass/v0.4/?start_date=1947-01-01&end_date=1948-12-01&page_size=100
@@ -39,9 +54,9 @@ http://api.declassification-engine.org/declass/v0.4/?start_date=1973-01-01&end_d
 ```
 #### Stata code
 ```
-histlabapi , options(date)  start(01/01/1947) end(12/01/1948)  limit(100)
-histlabapi , options(date) collection(cpdoc kissinger) start(01/1/1975) end(12/01/1975)  limit(100)
-histlabapi , options(date) start(01/1/1973) end(2/01/1973)  limit(100) collection(kissinger) fields(subject,body)
+histlabapi , option(date)  start(01/01/1947) end(12/01/1948)  limit(100)
+histlabapi , option(date) collection(cpdoc kissinger) start(01/1/1975) end(12/01/1975)  limit(100)
+histlabapi , option(date) start(01/1/1973) end(2/01/1973)  limit(100) collection(kissinger) fields(subject,body)
 ```
 
 #### R code
@@ -52,7 +67,7 @@ hlapi_date(start.date='1973-01-01', end.date='2/1/1973', collection='kissinger',
 ```
 
 ### Entity Query
-
+These queries allow a search of the History Lab collection by country, topic, or person.
 #### API code
 ```
 http://api.declassification-engine.org/declass/v0.4/?geo_ids=100&fields=subject,title
@@ -62,9 +77,9 @@ http://api.declassification-engine.org/declass/v0.4/?topic_ids=0&start_date=1975
 
 #### Stata code
 ```
-histlabapi , options(entity) geog(100) fields(subject,title)
-histlabapi , options(entity) geog(100) topic(0) fields(subject,title) limit(50)
-histlabapi , options(entity) topic(0) fields(subject,title) start(1/1/1975) end(12/31/1980)
+histlabapi , option(entity) geog(100) fields(subject,title)
+histlabapi , option(entity) geog(100) topic(0) fields(subject,title) limit(50)
+histlabapi , option(entity) topic(0) fields(subject,title) start(1/1/1975) end(12/31/1980)
 ```
 
 #### R code
@@ -76,7 +91,7 @@ hlapi_entity('topics', fields=c('subject','title'), value='0', start.date="1/1/1
 
 
 ### ID Query
-This query is to return a list of random IDs from the History Lab collection.
+This query is to return a data for an ID or list of IDs from the History Lab collection.
 
 #### API code
 ```
@@ -86,8 +101,8 @@ http://api.declassification-engine.org/declass/v0.4/?ids=1973LIMA07564,P760191-2
 
 #### Stata code
 ```
-histlabapi , options(id) id(1973LIMA07564)
-histlabapi , options(id) id(1973LIMA07564,P760191-2216,1973LIMA01001)
+histlabapi , option(id) id(1973LIMA07564)
+histlabapi , option(id) id(1973LIMA07564,P760191-2216,1973LIMA01001)
 ```
 
 #### R code
@@ -98,7 +113,7 @@ hlapi_id(ids=c('1973LIMA07564','P760191-2216','1973LIMA01001'), run='run')
 ```
 
 ### Full-text Query
-
+This query does a full text search on the History Lab collections.
 #### API code
 ```
 http://api.declassification-engine.org/declass/v0.4/text/?search=udeac&collections=frus&start_date=1950-01-01&end_date=2000-12-31&page_size=25
@@ -109,10 +124,10 @@ http://api.declassification-engine.org/declass/v0.4/text/?search=league%20of%20n
 
 #### Stata code
 ```
-histlabapi , options(text) collection(frus) start(01/01/1950) end(12/31/2000) text(udeac)
-histlabapi , options(text) collection(frus,statedeptcables) start(1/1/1950) end(12/31/2000) text(udeac) limit(200)
-histlabapi , options(text) collection(frus,statedeptcables) start(1/1/1950) end(12/31/2000) text(united nations) limit(200)
-histlabapi , options(text) collection(frus) start(1/1/1950) end(12/31/2000) text(league of nations) limit(400)
+histlabapi , option(text) collection(frus) start(01/01/1950) end(12/31/2000) text(udeac)
+histlabapi , option(text) collection(frus,statedeptcables) start(1/1/1950) end(12/31/2000) text(udeac) limit(200)
+histlabapi , option(text) collection(frus,statedeptcables) start(1/1/1950) end(12/31/2000) text(united nations) limit(200)
+histlabapi , option(text) collection(frus) start(1/1/1950) end(12/31/2000) text(league of nations) limit(400)
 ```
 
 #### R code
@@ -125,7 +140,7 @@ hlapi_search('league of nations', coll.name=c('statedeptcables','frus'),  start.
 ```
 
 ### Overview Query
-
+This is a catch-all set of queries that return an overview of the History Lab collections. Depending on the parameters, the query will return a list of all the collections available, a list of the fields available,or  a list of the entities available for a collection. It will also return a country of the number of times a given entity appears in a collection or the top entities in a collection for a given date range.
 #### API code
 ```
 http://api.declassification-engine.org/declass/v0.4/fields
@@ -136,9 +151,13 @@ http://api.declassification-engine.org/declass/v0.4/overview/?collection=frus&en
 
 ```
 
-#### Stata code - Still needs to be implemented
+#### Stata code
 ```
-
+histlabapi , option(fields)
+histlabapi , option(collections)
+histlabapi , option(overview) collection(frus)
+histlabapi , option(overview) collection(frus) overview(countries)
+histlabapi , option(overview) collection(frus) overview(persons) start("1973-01-01") end(12/31/1979)
 ```
 
 #### R code
