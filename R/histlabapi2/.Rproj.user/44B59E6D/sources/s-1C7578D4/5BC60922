@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1600326217609.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "5BC60922",
+    "lastKnownWriteTime" : 1600335166,
+    "last_content_update" : 1600335166359,
+    "path" : "C:/Users/arpie/Documents/R API.Rmd",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "263,0",
+        "last_setup_crc32" : "1C7578D4d7198116",
+        "scrollLine" : "235",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1600092418257.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3167251319",
+    "id" : "9C12E2B1",
+    "lastKnownWriteTime" : 1600346179,
+    "last_content_update" : 1600346179793,
+    "path" : "C:/Users/arpie/Documents/GitHub/APIpackages/R/histlabapi2/R/hlapi_search.R",
+    "project_path" : "R/hlapi_search.R",
+    "properties" : {
+        "cursorPosition" : "82,0",
+        "scrollLine" : "72"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

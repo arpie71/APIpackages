@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1600090225846.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "CC394CB5",
+    "lastKnownWriteTime" : 1600345471,
+    "last_content_update" : 1600345471382,
+    "path" : "C:/Users/arpie/Documents/GitHub/APIpackages/R/histlabapi2/R/histlabapi_utils.R",
+    "project_path" : "R/histlabapi_utils.R",
+    "properties" : {
+        "cursorPosition" : "141,12",
+        "scrollLine" : "128"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

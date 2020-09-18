@@ -1,0 +1,4 @@
+"0","knitr::opts_chunk$set(echo = TRUE)"
+"0","knitr::opts_knit$set(root.dir='c:/Users/arpie/Documents/GitHub/APIpackages/R/histlabapi2/')"
+"0","knitr::read_chunk('c:/Users/arpie/Documents/GitHub/APIpackages/R/histlabapi2/R/histlabapi_date.R')"
+"0",""

@@ -1,0 +1,54 @@
+
+
+for(i in 1:length(s.text)){
+  if("\\s+" %in% s.text[i]) {
+    print("space")
+  }
+}
+
+if("\\s+" %in% s.text){
+  print("space")
+}
+
+lapply(s.text, function(p) {if(length(grep("\\s+",p))==1) print("spec")})
+grep("\\s+",s.text)
+
+search <-""
+slist = ""
+s.text<-c("unitednations","udeac")
+or = TRUE
+#or = FALSE
+if(length(grep("\\s+",s.text))>0) {
+search<-ifelse(or==TRUE ,"or=(", "and=(")
+for(i in 1:length(s.text)) {
+  slist<- ifelse(length(grep("\\s+",s.text[i]))>0, paste0(slist,paste0("full_text.phfts.",gsub("\\s+","%20",s.text[i]),sep=""), sep=","), paste0(slist,paste0("full_text.wfts.",s.text[i],sep=""), sep=","))
+  }    
+slist<-paste0(search,gsub(",$",")",slist),sep="")
+} else {
+  slist<-ifelse(or==TRUE, paste0("full_text=wfts.",paste(unlist(s.text), collapse='%20or%20')) ,paste0("full_text=wfts.",paste(unlist(s.text), collapse='%20')))
+}
+search
+slist
+
+s.text<-c("united nations","udeac")
+or = TRUE
+
+url<-paste0(url,configsearch(s.text,or))
+
+url<-paste0(url,"full_text=wfts.",paste(unlist(s.text), collapse='%20or%20'))
+
+
+#print(length(s.text))
+# if(length(s.text)>1 & isTRUE(or)){
+#   s.text<-gsub("\\s+","%20",s.text)
+#   url<-paste0(url,"full_text=wfts.",paste(unlist(s.text), collapse='%20or%20'))
+#
+# }
+# if(length(s.text)==1 & isTRUE(or) | (!isTRUE(or))){
+# s.text<-gsub("\\s+","%20",s.text)
+# url<-paste0(url,"full_text=wfts.",paste(unlist(s.text), collapse='%20'))
+# #url<-paste0(url,"full_text=wfts.",s.text)
+# }
+
+
+#fromJSON("http://api.foiarchive.org/docs?or=(full_text.wfts.udeac,full_text.phfts.united%20nations)&select=doc_id,authored,title&limit=25")

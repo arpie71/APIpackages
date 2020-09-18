@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1584316572711.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3415411773",
+    "id" : "A575D88A",
+    "lastKnownWriteTime" : 1584958703,
+    "last_content_update" : 1584958703890,
+    "path" : "C:/Users/arpie/Documents/GitHub/APIpackages/R/histlabapi/R/hlapi_entity.R",
+    "project_path" : "R/hlapi_entity.R",
+    "properties" : {
+        "cursorPosition" : "16,17",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
